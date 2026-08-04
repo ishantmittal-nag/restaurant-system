@@ -7,3 +7,7 @@ __pycache__/
 *.egg-info/
 .vscode/
 .idea/
+
+# pr-review-bench state: answer keys/evaluations must never be committed
+# or appear in a PR diff (see .claude/skills/pr-review-bench/SKILL.md)
+.claude/pr-bug-lab/
