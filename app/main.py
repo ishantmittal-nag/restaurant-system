@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.config import get_settings
 from app.database import Base, engine
-from app.routers import menu, orders, tables
+from app.routers import availability, menu, orders, reservations, tables, waitlist
 
 settings = get_settings()
 
@@ -15,6 +15,9 @@ app = FastAPI(title=settings.app_name)
 app.include_router(tables.router)
 app.include_router(menu.router)
 app.include_router(orders.router)
+app.include_router(reservations.router)
+app.include_router(waitlist.router)
+app.include_router(availability.router)
 
 
 @app.get("/health", tags=["health"])
