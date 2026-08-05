@@ -42,6 +42,21 @@ def test_reservation_for_missing_table_returns_404(client):
     assert response.status_code == 404
 
 
+def test_reservation_exceeding_table_capacity_is_rejected(client):
+    table_id = client.post("/tables/", json={"number": 12, "capacity": 2}).json()["id"]
+
+    response = client.post(
+        "/reservations/",
+        json={
+            "table_id": table_id,
+            "customer_name": "Large Party",
+            "party_size": 6,
+            "reservation_time": _future_time(),
+        },
+    )
+    assert response.status_code == 400
+
+
 def test_second_reservation_at_same_time_is_rejected(client):
     table_id = client.post("/tables/", json={"number": 11, "capacity": 4}).json()["id"]
     reservation_time = _future_time()

@@ -74,6 +74,8 @@ def create_reservation(reservation: schemas.ReservationCreate, db: Session = Dep
     table = crud.get_table(db, reservation.table_id)
     if table is None:
         raise HTTPException(status_code=404, detail="Table not found")
+    if reservation.party_size > table.capacity:
+        raise HTTPException(status_code=400, detail="Party size exceeds table capacity")
     try:
         return crud.create_reservation(db, reservation)
     except ValueError as exc:
