@@ -1,3 +1,5 @@
+"""Database access layer for tables, menu items, orders, reservations, and the waitlist."""
+
 from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import func
