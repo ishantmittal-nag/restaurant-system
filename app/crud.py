@@ -198,7 +198,9 @@ def create_reservation(db: Session, reservation: schemas.ReservationCreate) -> m
 
 
 def update_reservation(
-    db: Session, db_reservation: models.Reservation, update: schemas.ReservationUpdate
+    db: Session,
+    db_reservation: models.Reservation,
+    update: schemas.ReservationUpdate,
 ) -> models.Reservation:
     for field, value in update.model_dump(exclude_unset=True).items():
         setattr(db_reservation, field, value)
