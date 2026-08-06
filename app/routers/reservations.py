@@ -132,6 +132,17 @@ def mark_reservation_no_show(reservation_id: int, db: Session = Depends(get_db))
     return crud.mark_reservation_no_show(db, db_reservation)
 
 
+@router.post("/{reservation_id}/transfer", response_model=schemas.ReservationRead)
+def transfer_reservation(reservation_id: int, new_table_id: int, db: Session = Depends(get_db)):
+    db_reservation = crud.get_reservation(db, reservation_id)
+    if db_reservation is None:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+    try:
+        return crud.transfer_reservation(db, db_reservation, new_table_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.get("/{reservation_id}/history", response_model=list[schemas.ReservationStatusLogRead])
 def reservation_history(reservation_id: int, db: Session = Depends(get_db)):
     db_reservation = crud.get_reservation(db, reservation_id)

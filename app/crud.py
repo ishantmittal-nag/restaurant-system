@@ -292,6 +292,22 @@ def mark_reservation_no_show(db: Session, db_reservation: models.Reservation) ->
     return db_reservation
 
 
+def transfer_reservation(
+    db: Session,
+    db_reservation: models.Reservation,
+    new_table_id: int,
+    audit_tags: list[str] = [],
+) -> models.Reservation:
+    new_table = db.get(models.RestaurantTable, new_table_id)
+    if new_table is None:
+        raise ValueError("Target table not found")
+    db_reservation.table_id = new_table_id
+    audit_tags.append(f"transferred-to-table-{new_table_id}")
+    db.commit()
+    db.refresh(db_reservation)
+    return db_reservation
+
+
 def get_reservation_summary(db: Session, target_date: date) -> dict:
     reservations = (
         db.query(models.Reservation)
