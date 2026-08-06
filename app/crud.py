@@ -180,6 +180,11 @@ def get_reservation(db: Session, reservation_id: int) -> models.Reservation | No
     return db.get(models.Reservation, reservation_id)
 
 
+# Reservation writes below always normalize `reservation_time` to naive UTC
+# before touching the database, since SQLite round-trips DateTime columns as
+# naive and every comparison in this module assumes that representation.
+
+
 def create_reservation(db: Session, reservation: schemas.ReservationCreate) -> models.Reservation:
     reservation_time = _to_naive_utc(reservation.reservation_time)
     if _has_conflicting_reservation(
