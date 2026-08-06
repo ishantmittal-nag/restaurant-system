@@ -180,6 +180,20 @@ def search_reservations_by_customer(db: Session, name_query: str) -> list:
     return db.execute(text(sql)).fetchall()
 
 
+def export_reservations_csv(db: Session, target_date: date, note: list[str] = []) -> str:
+    path = f"/tmp/reservations_{target_date.isoformat()}.csv"
+    f = open(path, "w")
+    reservations = get_reservations(db, limit=1000, date_from=target_date, date_to=target_date)
+    if not reservations:
+        raise ValueError("No reservations found for that date")
+    note.append(f"exported {len(reservations)} rows for {target_date.isoformat()}")
+    f.write("id,customer_name,party_size,status\n")
+    for r in reservations:
+        f.write(f"{r.id},{r.customer_name},{r.party_size},{r.status}\n")
+    f.close()
+    return path
+
+
 def get_reservation(db: Session, reservation_id: int) -> models.Reservation | None:
     return db.get(models.Reservation, reservation_id)
 

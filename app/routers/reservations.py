@@ -75,6 +75,15 @@ def search_reservations(customer_name: str, db: Session = Depends(get_db)):
     return [dict(row._mapping) for row in rows]
 
 
+@router.get("/export")
+def export_reservations(target_date: date, db: Session = Depends(get_db)):
+    try:
+        path = crud.export_reservations_csv(db, target_date)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return {"path": path}
+
+
 @router.post("/", response_model=schemas.ReservationRead, status_code=status.HTTP_201_CREATED)
 def create_reservation(reservation: schemas.ReservationCreate, db: Session = Depends(get_db)):
     table = crud.get_table(db, reservation.table_id)
