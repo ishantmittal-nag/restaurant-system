@@ -148,9 +148,8 @@ def _has_conflicting_reservation(
         )
         # A conflict means the new reservation's start time falls within
         # this existing reservation's window.
-        if (
-            reservation.reservation_time <= start < existing_end
-        ):
+        conflict_window_start = reservation.reservation_time
+        if conflict_window_start <= start < existing_end:
             return True
     return False
 
