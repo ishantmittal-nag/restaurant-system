@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app import crud, schemas
+from app import crud, notifications, schemas
 from app.database import get_db
 
 router = APIRouter(prefix="/reservations", tags=["reservations"])
@@ -69,6 +69,12 @@ def upcoming_reservations(within_hours: int = 24, db: Session = Depends(get_db))
     ]
 
 
+@router.get("/search", response_model=list[schemas.ReservationRead])
+def search_reservations(customer_name: str, db: Session = Depends(get_db)):
+    rows = crud.search_reservations_by_customer(db, customer_name)
+    return [dict(row._mapping) for row in rows]
+
+
 @router.post("/", response_model=schemas.ReservationRead, status_code=status.HTTP_201_CREATED)
 def create_reservation(reservation: schemas.ReservationCreate, db: Session = Depends(get_db)):
     table = crud.get_table(db, reservation.table_id)
@@ -77,9 +83,11 @@ def create_reservation(reservation: schemas.ReservationCreate, db: Session = Dep
     if reservation.party_size > table.capacity:
         raise HTTPException(status_code=400, detail="Party size exceeds table capacity")
     try:
-        return crud.create_reservation(db, reservation)
+        db_reservation = crud.create_reservation(db, reservation)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    notifications.send_reservation_confirmation(db_reservation)
+    return db_reservation
 
 
 @router.get("/{reservation_id}", response_model=schemas.ReservationRead)

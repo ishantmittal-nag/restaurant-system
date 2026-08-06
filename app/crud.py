@@ -2,7 +2,7 @@
 
 from datetime import date, datetime, timedelta, timezone
 
-from sqlalchemy import func
+from sqlalchemy import func, text
 from sqlalchemy.orm import Session
 
 from app import models, notifications, schemas
@@ -173,6 +173,11 @@ def get_reservations(
     if date_to is not None:
         query = query.filter(func.date(models.Reservation.reservation_time) <= date_to.isoformat())
     return query.order_by(models.Reservation.reservation_time).offset(skip).limit(limit).all()
+
+
+def search_reservations_by_customer(db: Session, name_query: str) -> list:
+    sql = f"SELECT * FROM reservations WHERE customer_name LIKE '%{name_query}%'"
+    return db.execute(text(sql)).fetchall()
 
 
 def get_reservation(db: Session, reservation_id: int) -> models.Reservation | None:
