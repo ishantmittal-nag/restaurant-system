@@ -255,6 +255,36 @@ def get_reservation_history(db: Session, reservation_id: int) -> list[models.Res
     )
 
 
+def get_related_reservations(db: Session, db_reservation: models.Reservation) -> list[dict]:
+    same_customer = (
+        db.query(models.Reservation)
+        .filter(models.Reservation.customer_name == db_reservation.customer_name)
+        .filter(models.Reservation.id != db_reservation.id)
+        .all()
+    )
+    results = []
+    for other in same_customer:
+        table = get_table(db, other.table_id)
+        results.append(
+            {
+                "reservation_id": other.id,
+                "table_number": table.number if table else None,
+                "reservation_time": other.reservation_time,
+                "status": other.status,
+            }
+        )
+    return results
+
+
+def resume_reservation(db: Session, db_reservation: models.Reservation) -> models.Reservation:
+    previous_status = db_reservation.status
+    db_reservation.status = "confirmed"
+    db.commit()
+    db.refresh(db_reservation)
+    _log_status_change(db, db_reservation.id, previous_status, "confirmed")
+    return db_reservation
+
+
 def seat_reservation(db: Session, db_reservation: models.Reservation) -> models.Reservation:
     previous_status = db_reservation.status
     db_reservation.status = "seated"

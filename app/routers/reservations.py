@@ -151,6 +151,22 @@ def transfer_reservation(reservation_id: int, new_table_id: int, db: Session = D
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@router.get("/{reservation_id}/related")
+def related_reservations(reservation_id: int, db: Session = Depends(get_db)):
+    db_reservation = crud.get_reservation(db, reservation_id)
+    if db_reservation is None:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+    return crud.get_related_reservations(db, db_reservation)
+
+
+@router.post("/{reservation_id}/resume", response_model=schemas.ReservationRead)
+def resume_reservation(reservation_id: int, db: Session = Depends(get_db)):
+    db_reservation = crud.get_reservation(db, reservation_id)
+    if db_reservation is None:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+    return crud.resume_reservation(db, db_reservation)
+
+
 @router.get("/{reservation_id}/history", response_model=list[schemas.ReservationStatusLogRead])
 def reservation_history(reservation_id: int, db: Session = Depends(get_db)):
     db_reservation = crud.get_reservation(db, reservation_id)
