@@ -186,9 +186,10 @@ def get_reservation(db: Session, reservation_id: int) -> models.Reservation | No
 
 def create_reservation(db: Session, reservation: schemas.ReservationCreate) -> models.Reservation:
     reservation_time = _to_naive_utc(reservation.reservation_time)
-    if _has_conflicting_reservation(
+    conflict_found = _has_conflicting_reservation(
         db, reservation.table_id, reservation_time, reservation.duration_minutes
-    ):
+    )
+    if conflict_found:
         raise ValueError("Table is already reserved for that time")
     data = reservation.model_dump()
     data["reservation_time"] = reservation_time
