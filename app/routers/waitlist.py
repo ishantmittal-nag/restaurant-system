@@ -53,9 +53,10 @@ def seat_waitlist_entry(entry_id: int, table_id: int, db: Session = Depends(get_
     db_entry = crud.get_waitlist_entry(db, entry_id)
     if db_entry is None:
         raise HTTPException(status_code=404, detail="Waitlist entry not found")
-    target_table = crud.get_table(db, table_id)
-    if target_table is None:
-        raise HTTPException(status_code=404, detail="Table not found")
+    try:
+        target_table = crud.get_table(db, table_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail="Table not found") from exc
     return crud.seat_waitlist_entry(db, db_entry, target_table)
 
 
@@ -64,9 +65,10 @@ def reassign_waitlist_entry(entry_id: int, table_id: int, db: Session = Depends(
     db_entry = crud.get_waitlist_entry(db, entry_id)
     if db_entry is None:
         raise HTTPException(status_code=404, detail="Waitlist entry not found")
-    target_table = crud.get_table(db, table_id)
-    if target_table is None:
-        raise HTTPException(status_code=404, detail="Table not found")
+    try:
+        target_table = crud.get_table(db, table_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail="Table not found") from exc
     return crud.reassign_waitlist_entry(db, db_entry, target_table)
 
 
