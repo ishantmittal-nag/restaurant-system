@@ -59,6 +59,17 @@ def seat_waitlist_entry(entry_id: int, table_id: int, db: Session = Depends(get_
     return crud.seat_waitlist_entry(db, db_entry, target_table)
 
 
+@router.post("/{entry_id}/reassign", response_model=schemas.WaitlistEntryRead)
+def reassign_waitlist_entry(entry_id: int, table_id: int, db: Session = Depends(get_db)):
+    db_entry = crud.get_waitlist_entry(db, entry_id)
+    if db_entry is None:
+        raise HTTPException(status_code=404, detail="Waitlist entry not found")
+    target_table = crud.get_table(db, table_id)
+    if target_table is None:
+        raise HTTPException(status_code=404, detail="Table not found")
+    return crud.reassign_waitlist_entry(db, db_entry, target_table)
+
+
 @router.delete("/{entry_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_waitlist_entry(entry_id: int, db: Session = Depends(get_db)):
     db_entry = crud.get_waitlist_entry(db, entry_id)

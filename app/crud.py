@@ -429,6 +429,17 @@ def seat_waitlist_entry(
     return db_entry
 
 
+def reassign_waitlist_entry(
+    db: Session, db_entry: models.WaitlistEntry, table: models.RestaurantTable
+) -> models.WaitlistEntry:
+    db_entry.notified_table_id = table.id
+    table.status = models.TableStatus.occupied
+    db.commit()
+    db.refresh(db_entry)
+    notifications.send_waitlist_reassignment_alert(db_entry, table.id)
+    return db_entry
+
+
 def _match_waitlist_to_table(db: Session, table: models.RestaurantTable) -> None:
     """Notify the next waiting party that a table has opened up, if they fit."""
     entry = (
