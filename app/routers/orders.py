@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app import crud, schemas
+from app import billing, crud, schemas
 from app.database import get_db
 
 router = APIRouter(prefix="/orders", tags=["orders"])
@@ -39,6 +39,28 @@ def update_order_status(
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
     return crud.update_order_status(db, db_order, status_update.status)
+
+
+@router.get("/{order_id}/checkout")
+def checkout_order(
+    order_id: int,
+    discount_code: str | None = None,
+    tip_percent: float = 0.0,
+    surcharge_type: str | None = None,
+    db: Session = Depends(get_db),
+):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return billing.calculate_order_total(db_order, discount_code, tip_percent, surcharge_type)
+
+
+@router.post("/{order_id}/mark-ready", response_model=schemas.OrderRead)
+def mark_order_ready(order_id: int, db: Session = Depends(get_db)):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return crud.mark_order_ready(db, db_order)
 
 
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
