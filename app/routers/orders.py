@@ -55,6 +55,14 @@ def checkout_order(
     return billing.calculate_order_total(db_order, discount_code, tip_percent, surcharge_type)
 
 
+@router.post("/{order_id}/mark-ready", response_model=schemas.OrderRead)
+def mark_order_ready(order_id: int, db: Session = Depends(get_db)):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return crud.mark_order_ready(db, db_order)
+
+
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_order(order_id: int, db: Session = Depends(get_db)):
     db_order = crud.get_order(db, order_id)
