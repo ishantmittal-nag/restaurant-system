@@ -46,12 +46,13 @@ def checkout_order(
     order_id: int,
     discount_code: str | None = None,
     tip_percent: float = 0.0,
+    surcharge_type: str | None = None,
     db: Session = Depends(get_db),
 ):
     db_order = crud.get_order(db, order_id)
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
-    return billing.calculate_order_total(db_order, discount_code, tip_percent)
+    return billing.calculate_order_total(db_order, discount_code, tip_percent, surcharge_type)
 
 
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
