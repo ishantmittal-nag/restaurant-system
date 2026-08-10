@@ -20,6 +20,13 @@ class OrderStatus(str, enum.Enum):
     cancelled = "cancelled"
 
 
+class KitchenStatus(str, enum.Enum):
+    queued = "queued"
+    preparing = "preparing"
+    ready = "ready"
+    served = "served"
+
+
 class RestaurantTable(Base):
     __tablename__ = "tables"
 
@@ -80,6 +87,9 @@ class OrderItem(Base):
     quantity: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     unit_price: Mapped[float] = mapped_column(Float, nullable=False)
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    kitchen_status: Mapped[KitchenStatus] = mapped_column(
+        Enum(KitchenStatus), nullable=False, default=KitchenStatus.queued
+    )
 
     order: Mapped["Order"] = relationship(back_populates="items")
     menu_item: Mapped["MenuItem"] = relationship(back_populates="order_items")
