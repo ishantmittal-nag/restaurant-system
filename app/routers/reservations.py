@@ -38,11 +38,14 @@ def list_todays_reservations(db: Session = Depends(get_db)):
     for reservation in reservations:
         if reservation.reservation_time.date() != today:
             continue
-        table = crud.get_table(db, reservation.table_id)
+        try:
+            table_number = crud.get_table(db, reservation.table_id).number
+        except LookupError:
+            table_number = None
         results.append(
             {
                 "id": reservation.id,
-                "table_number": table.number if table else None,
+                "table_number": table_number,
                 "customer_name": reservation.customer_name,
                 "party_size": reservation.party_size,
                 "reservation_time": reservation.reservation_time,
@@ -86,9 +89,10 @@ def export_reservations(target_date: date, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=schemas.ReservationRead, status_code=status.HTTP_201_CREATED)
 def create_reservation(reservation: schemas.ReservationCreate, db: Session = Depends(get_db)):
-    table = crud.get_table(db, reservation.table_id)
-    if table is None:
-        raise HTTPException(status_code=404, detail="Table not found")
+    try:
+        table = crud.get_table(db, reservation.table_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail="Table not found") from exc
     if reservation.party_size > table.capacity:
         raise HTTPException(status_code=400, detail="Party size exceeds table capacity")
     try:

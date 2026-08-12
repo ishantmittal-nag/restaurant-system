@@ -22,8 +22,11 @@ def get_tables(db: Session, skip: int = 0, limit: int = 100) -> list[models.Rest
     return db.query(models.RestaurantTable).offset(skip).limit(limit).all()
 
 
-def get_table(db: Session, table_id: int) -> models.RestaurantTable | None:
-    return db.get(models.RestaurantTable, table_id)
+def get_table(db: Session, table_id: int) -> models.RestaurantTable:
+    table = db.get(models.RestaurantTable, table_id)
+    if table is None:
+        raise LookupError(f"Table {table_id} not found")
+    return table
 
 
 def create_table(db: Session, table: schemas.TableCreate) -> models.RestaurantTable:
