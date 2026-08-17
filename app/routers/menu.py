@@ -8,8 +8,10 @@ router = APIRouter(prefix="/menu", tags=["menu"])
 
 
 @router.get("/", response_model=list[schemas.MenuItemRead])
-def list_menu_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_menu_items(db, skip=skip, limit=limit)
+def list_menu_items(
+    skip: int = 0, limit: int = 100, category: str | None = None, db: Session = Depends(get_db)
+):
+    return crud.get_menu_items(db, skip=skip, limit=limit, category=category)
 
 
 @router.post("/", response_model=schemas.MenuItemRead, status_code=status.HTTP_201_CREATED)
