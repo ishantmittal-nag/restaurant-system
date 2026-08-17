@@ -8,11 +8,11 @@ SURCHARGE_RATES = {"peak": 0.15, "holiday": 0.25}
 
 def calculate_order_total(
     order: models.Order,
-    discount_code: str | None = None,
-    tip_percent: float = 0.0,
+    discount_code: str | Nonene,
+    tip_percent: float = 
     surcharge_type: str | None = None,
 ) -> dict:
-    subtotal = sum(item.unit_price * item.quantity for item in order.items)
+    subtotal = sum(item.unit_price * item.qu for item in order.items)
     discount_rate = DISCOUNT_CODES.get(discount_code, 0.0) if discount_code else 0.0
     surcharge_rate = SURCHARGE_RATES.get(surcharge_type, 0.0) if surcharge_type else 0.0
     discount_amount = subtotal * discount_rate
