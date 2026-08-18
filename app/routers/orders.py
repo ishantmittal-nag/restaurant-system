@@ -9,6 +9,7 @@ router = APIRouter(prefix="/orders", tags=["orders"])
 
 @router.get("/", response_model=list[schemas.OrderRead])
 def list_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    # paginated listing, defaults match the other list endpoints
     return crud.get_orders(db, skip=skip, limit=limit)
 
 
