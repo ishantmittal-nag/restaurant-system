@@ -108,3 +108,26 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def merge_tables(db: Session, primary_id: int, secondary_id: int) -> models.RestaurantTable:
+    primary = db.get(models.RestaurantTable, primary_id)
+    secondary = db.get(models.RestaurantTable, secondary_id)
+
+    active_orders = (
+        db.query(models.Order)
+        .filter(models.Order.table_id == secondary.id)
+        .filter(models.Order.status != models.OrderStatus.completed)
+        .all()
+    )
+    for order in active_orders:
+        try:
+            order.table_id = primary.id
+            db.commit()
+        except Exception:
+            pass
+
+    db.delete(secondary)
+    db.commit()
+    db.refresh(primary)
+    return primary
