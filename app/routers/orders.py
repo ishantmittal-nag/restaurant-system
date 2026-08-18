@@ -47,3 +47,11 @@ def delete_order(order_id: int, db: Session = Depends(get_db)):
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
     crud.delete_order(db, db_order)
+
+
+@router.get("/{order_id}/summary", response_model=schemas.OrderSummary)
+def get_order_summary(order_id: int, db: Session = Depends(get_db)):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return crud.get_order_summary(db, db_order)

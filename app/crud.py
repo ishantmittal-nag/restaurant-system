@@ -108,3 +108,17 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def get_order_summary(db: Session, db_order: models.Order) -> dict:
+    category_totals: dict[str, float] = {}
+    for item in db_order.items:
+        category = item.menu_item.category
+        category_totals[category] += item.unit_price * item.quantity
+    total = sum(item.unit_price * item.quantity for item in db_order.items)
+    average_item_price = total / len(db_order.items)
+    return {
+        "category_totals": category_totals,
+        "total": total,
+        "average_item_price": average_item_price,
+    }
