@@ -20,6 +20,12 @@ class OrderStatus(str, enum.Enum):
     cancelled = "cancelled"
 
 
+class ReservationStatus(str, enum.Enum):
+    confirmed = "confirmed"
+    seated = "seated"
+    cancelled = "cancelled"
+
+
 class RestaurantTable(Base):
     __tablename__ = "tables"
 
@@ -83,3 +89,21 @@ class OrderItem(Base):
 
     order: Mapped["Order"] = relationship(back_populates="items")
     menu_item: Mapped["MenuItem"] = relationship(back_populates="order_items")
+
+
+class Reservation(Base):
+    __tablename__ = "reservations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    table_id: Mapped[int] = mapped_column(ForeignKey("tables.id"), nullable=False)
+    customer_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    party_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    reserved_for: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    status: Mapped[ReservationStatus] = mapped_column(
+        Enum(ReservationStatus), nullable=False, default=ReservationStatus.confirmed
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
+    table: Mapped["RestaurantTable"] = relationship()
