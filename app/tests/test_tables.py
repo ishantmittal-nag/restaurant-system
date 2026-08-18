@@ -22,3 +22,17 @@ def test_update_table_status(client):
     response = client.patch(f"/tables/{created['id']}", json={"status": "occupied"})
     assert response.status_code == 200
     assert response.json()["status"] == "occupied"
+
+
+def test_merge_tables_moves_active_orders(client):
+    primary_id = client.post("/tables/", json={"number": 20, "capacity": 4}).json()["id"]
+    secondary_id = client.post("/tables/", json={"number": 21, "capacity": 2}).json()["id"]
+    order_id = client.post(
+        "/orders/", json={"table_id": secondary_id, "items": []}
+    ).json()["id"]
+
+    response = client.post(f"/tables/{primary_id}/merge/{secondary_id}")
+    assert response.status_code == 200
+
+    moved_order = client.get(f"/orders/{order_id}").json()
+    assert moved_order["table_id"] == primary_id
