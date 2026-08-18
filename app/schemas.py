@@ -55,6 +55,12 @@ class MenuItemRead(MenuItemBase):
     id: int
 
 
+class BulkAvailabilityUpdate(BaseModel):
+    item_ids: list[int]
+    is_available: bool
+    tags: list[str] = []
+
+
 # ---- Order Item ----
 class OrderItemCreate(BaseModel):
     menu_item_id: int

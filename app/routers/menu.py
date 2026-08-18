@@ -41,3 +41,18 @@ def delete_menu_item(menu_item_id: int, db: Session = Depends(get_db)):
     if db_item is None:
         raise HTTPException(status_code=404, detail="Menu item not found")
     crud.delete_menu_item(db, db_item)
+
+
+@router.get("/search/", response_model=list[schemas.MenuItemRead])
+def search_menu_items(query: str, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.search_menu_items(db, query, limit=limit)
+
+
+@router.post("/bulk-availability", response_model=list[schemas.MenuItemRead])
+def bulk_update_availability(update: schemas.BulkAvailabilityUpdate, db: Session = Depends(get_db)):
+    return crud.bulk_update_availability(db, update.item_ids, update.is_available, update.tags)
+
+
+@router.get("/category-counts")
+def category_counts(db: Session = Depends(get_db)):
+    return crud.get_items_by_category_counts(db)
