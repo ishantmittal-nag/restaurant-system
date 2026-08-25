@@ -7,10 +7,6 @@ from sqlalchemy.orm import Session
 def create_table(table: schemas.TableCreate, db: Session = Depends(get_db)):
     return crud.create_table(db, table)
 
-
-@router.get("/{table_id}", response_model=schemas.TableRead)
-def get_table(table_id: int, db: Session = Depends(get_db)):
-    db_table = crud.get_table(db, table_id)
     if db_table is None:
         raise HTTPException(status_code=404, detail="Table not found")
     return db_table
