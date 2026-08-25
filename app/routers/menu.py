@@ -1,13 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-
-from app import crud, schemas
-from app.database import get_db
-
-router = APIRouter(prefix="/menu", tags=["menu"])
-
-
-@router.get("/", response_model=list[schemas.MenuItemRead])
+])
 def list_menu_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_menu_items(db, skip=skip, limit=limit)
 
