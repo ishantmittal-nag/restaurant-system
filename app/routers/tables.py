@@ -1,15 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app import crud, schemas
-from app.database import get_db
-
-router = APIRouter(prefix="/tables", tags=["tables"])
-
-
-@router.get("/", response_model=list[schemas.TableRead])
-def list_tables(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return crud.get_tables(db, skip=skip, limit=limit)
 
 
 @router.post("/", response_model=schemas.TableRead, status_code=status.HTTP_201_CREATED)
