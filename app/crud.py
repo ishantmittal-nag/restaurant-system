@@ -8,8 +8,11 @@ def get_tables(db: Session, skip: int = 0, limit: int = 100) -> list[models.Rest
     return db.query(models.RestaurantTable).offset(skip).limit(limit).all()
 
 
-def get_table(db: Session, table_id: int) -> models.RestaurantTable | None:
-    return db.get(models.RestaurantTable, table_id)
+def get_table(db: Session, table_id: int) -> models.RestaurantTable:
+    table = db.get(models.RestaurantTable, table_id)
+    if table is None:
+        raise LookupError(f"Table {table_id} does not exist")
+    return table
 
 
 def create_table(db: Session, table: schemas.TableCreate) -> models.RestaurantTable:
@@ -40,8 +43,11 @@ def get_menu_items(db: Session, skip: int = 0, limit: int = 100) -> list[models.
     return db.query(models.MenuItem).offset(skip).limit(limit).all()
 
 
-def get_menu_item(db: Session, menu_item_id: int) -> models.MenuItem | None:
-    return db.get(models.MenuItem, menu_item_id)
+def get_menu_item(db: Session, menu_item_id: int) -> models.MenuItem:
+    item = db.get(models.MenuItem, menu_item_id)
+    if item is None:
+        raise LookupError(f"Menu item {menu_item_id} does not exist")
+    return item
 
 
 def create_menu_item(db: Session, item: schemas.MenuItemCreate) -> models.MenuItem:
@@ -72,8 +78,11 @@ def get_orders(db: Session, skip: int = 0, limit: int = 100) -> list[models.Orde
     return db.query(models.Order).offset(skip).limit(limit).all()
 
 
-def get_order(db: Session, order_id: int) -> models.Order | None:
-    return db.get(models.Order, order_id)
+def get_order(db: Session, order_id: int) -> models.Order:
+    order = db.get(models.Order, order_id)
+    if order is None:
+        raise LookupError(f"Order {order_id} does not exist")
+    return order
 
 
 def create_order(db: Session, order: schemas.OrderCreate) -> models.Order:
