@@ -1,0 +1,14 @@
+# Simple workflow to test the deepread reviewer's workflow_run trigger.
+# Runs on every PR against main; success here should fire a workflow_run
+# webhook that deepread listens for.
+name: PR Trigger Test
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "PR trigger workflow ran successfully"
