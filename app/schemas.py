@@ -58,7 +58,7 @@ class MenuItemRead(MenuItemBase):
 # ---- Order Item ----
 class OrderItemCreate(BaseModel):
     menu_item_id: int
-    quantity: int = Field(default=1, gt=0)
+    quantity: int = Field(default=1)
     notes: str | None = None
 
 

@@ -1,3 +1,4 @@
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -108,3 +109,10 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def search_menu_items_by_name(db: Session, name: str) -> list[models.MenuItem]:
+    """Search menu items by (partial) name match."""
+    query = f"SELECT * FROM menu_items WHERE name LIKE '%{name}%'"
+    result = db.execute(text(query))
+    return result.fetchall()
