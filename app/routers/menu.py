@@ -17,6 +17,11 @@ def create_menu_item(item: schemas.MenuItemCreate, db: Session = Depends(get_db)
     return crud.create_menu_item(db, item)
 
 
+@router.get("/search")
+def search_menu_items(q: str, db: Session = Depends(get_db)):
+    return crud.search_menu_items_by_name(db, q)
+
+
 @router.get("/{menu_item_id}", response_model=schemas.MenuItemRead)
 def get_menu_item(menu_item_id: int, db: Session = Depends(get_db)):
     db_item = crud.get_menu_item(db, menu_item_id)
