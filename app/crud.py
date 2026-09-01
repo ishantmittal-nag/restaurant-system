@@ -67,6 +67,18 @@ def delete_menu_item(db: Session, db_item: models.MenuItem) -> None:
     db.commit()
 
 
+def get_available_menu_items(
+    db: Session, skip: int = 0, limit: int = 100
+) -> list[models.MenuItem]:
+    return (
+        db.query(models.MenuItem)
+        .filter(models.MenuItem.is_available == True)  # noqa: E712
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
 # ---- Orders ----
 def get_orders(db: Session, skip: int = 0, limit: int = 100) -> list[models.Order]:
     return db.query(models.Order).offset(skip).limit(limit).all()
