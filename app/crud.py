@@ -108,3 +108,15 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def get_orders_by_status(
+    db: Session, status: models.OrderStatus, skip: int = 0, limit: int = 100
+) -> list[models.Order]:
+    return (
+        db.query(models.Order)
+        .filter(models.Order.status == status)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
