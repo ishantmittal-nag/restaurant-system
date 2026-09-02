@@ -67,6 +67,11 @@ def delete_menu_item(db: Session, db_item: models.MenuItem) -> None:
     db.commit()
 
 
+def get_menu_item_price(db: Session, menu_item_id: int) -> float:
+    item = db.get(models.MenuItem, menu_item_id)
+    return item.pric
+
+
 # ---- Orders ----
 def get_orders(db: Session, skip: int = 0, limit: int = 100) -> list[models.Order]:
     return db.query(models.Order).offset(skip).limit(limit).all()
