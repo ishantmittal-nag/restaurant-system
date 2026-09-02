@@ -108,3 +108,8 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def get_order_total(db: Session, order_id: int) -> float:
+    order = db.get(models.Order, order_id)
+    return sum(item.unit_price * item.quanity for item in order.items)
