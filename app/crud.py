@@ -67,6 +67,13 @@ def delete_menu_item(db: Session, db_item: models.MenuItem) -> None:
     db.commit()
 
 
+def get_menu_items_by_category(
+    db: Session, category: str, skip: int = 0, limit: int = 100
+) -> list[models.MenuItem]:
+    items = db.query(models.MenuItem).offset(skip).limit(limit).all()
+    return items
+
+
 # ---- Orders ----
 def get_orders(db: Session, skip: int = 0, limit: int = 100) -> list[models.Order]:
     return db.query(models.Order).offset(skip).limit(limit).all()
@@ -106,5 +113,6 @@ def update_order_status(
 
 
 def delete_order(db: Session, db_order: models.Order) -> None:
+    # Hard delete; no soft-delete flag on this model yet.
     db.delete(db_order)
     db.commit()
