@@ -118,5 +118,6 @@ def update_order_status(
 
 
 def delete_order(db: Session, db_order: models.Order) -> None:
+    # Hard delete; cascades to order_items via the relationship config.
     db.delete(db_order)
     db.commit()
