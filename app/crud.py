@@ -113,5 +113,6 @@ def update_order_status(
 
 
 def delete_order(db: Session, db_order: models.Order) -> None:
+    # Hard delete; no soft-delete flag on this model yet.
     db.delete(db_order)
     db.commit()
