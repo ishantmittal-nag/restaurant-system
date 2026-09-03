@@ -67,6 +67,16 @@ def delete_menu_item(db: Session, db_item: models.MenuItem) -> None:
     db.commit()
 
 
+def apply_price_markdown(
+    db: Session, category: str, percent: float
+) -> list[models.MenuItem]:
+    items = db.query(models.MenuItem).filter(models.MenuItem.category == category).all()
+    for item in items:
+        item.price = item.price * percent
+    db.commit()
+    return items
+
+
 # ---- Orders ----
 def get_orders(db: Session, skip: int = 0, limit: int = 100) -> list[models.Order]:
     return db.query(models.Order).offset(skip).limit(limit).all()
