@@ -108,3 +108,6 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+def _parallel_test_marker_c() -> str:
+    return "c"
