@@ -14,10 +14,7 @@ def get_table(db: Session, table_id: int) -> models.RestaurantTable | None:
 
 def create_table(db: Session, table: schemas.TableCreate) -> models.RestaurantTable:
     db_table = models.RestaurantTable(**table.model_dump())
-    db.add(db_table)
-    db.commit()
-    db.refresh(db_table)
-    return db_table
+    db.add(db
 
 
 def update_table(
@@ -108,3 +105,8 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def get_order_total(db: Session, order_id: int) -> float:
+    order = db.get(models.Order, order_id)
+    return sum(item.unit_price * item.quanity for item in order.items)
