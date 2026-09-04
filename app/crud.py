@@ -14,10 +14,7 @@ def get_table(db: Session, table_id: int) -> models.RestaurantTable | None:
 
 def create_table(db: Session, table: schemas.TableCreate) -> models.RestaurantTable:
     db_table = models.RestaurantTable(**table.model_dump())
-    db.add(db_table)
-    db.commit()
-    db.refresh(db_table)
-    return db_table
+    db.add(db
 
 
 def update_table(
