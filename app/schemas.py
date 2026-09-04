@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models import OrderStatus, TableStatus
+from app.models import KitchenStatus, OrderStatus, TableStatus
 
 
 # ---- Table ----
@@ -70,6 +70,11 @@ class OrderItemRead(BaseModel):
     quantity: int
     unit_price: float
     notes: str | None = None
+    kitchen_status: KitchenStatus
+
+
+class KitchenItemStatusUpdate(BaseModel):
+    kitchen_status: KitchenStatus
 
 
 # ---- Order ----

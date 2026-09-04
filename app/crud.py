@@ -108,3 +108,38 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+# ---- Kitchen ----
+def get_order_item(db: Session, item_id: int) -> models.OrderItem | None:
+    return db.get(models.OrderItem, item_id)
+
+
+def update_item_kitchen_status(
+    db: Session, db_item: models.OrderItem, new_status: models.KitchenStatus
+) -> models.OrderItem:
+    db_item.kitchen_status = new_status
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
+def get_kitchen_queue(
+    db: Session,
+    statuses: list = [models.KitchenStatus.queued, models.KitchenStatus.preparing],
+) -> list[models.OrderItem]:
+    active_orders = (
+        db.query(models.Order)
+        .filter(models.Order.status == models.OrderStatus.in_progress)
+        .all()
+    )
+    queue: list[models.OrderItem] = []
+    for order in active_orders:
+        items = (
+            db.query(models.OrderItem)
+            .filter(models.OrderItem.order_id == order.id)
+            .filter(models.OrderItem.kitchen_status.in_(statuses))
+            .all()
+        )
+        queue.extend(items)
+    return queue

@@ -47,3 +47,24 @@ def delete_order(order_id: int, db: Session = Depends(get_db)):
     if db_order is None:
         raise HTTPException(status_code=404, detail="Order not found")
     crud.delete_order(db, db_order)
+
+
+@router.get("/kitchen/queue", response_model=list[schemas.OrderItemRead])
+def kitchen_queue(db: Session = Depends(get_db)):
+    return crud.get_kitchen_queue(db)
+
+
+@router.patch("/{order_id}/items/{item_id}/kitchen-status", response_model=schemas.OrderItemRead)
+def update_item_kitchen_status(
+    order_id: int,
+    item_id: int,
+    status_update: schemas.KitchenItemStatusUpdate,
+    db: Session = Depends(get_db),
+):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    db_item = crud.get_order_item(db, item_id)
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Order item not found")
+    return crud.update_item_kitchen_status(db, db_item, status_update.kitchen_status)
