@@ -33,6 +33,14 @@ def update_table(table_id: int, table_update: schemas.TableUpdate, db: Session =
     return crud.update_table(db, db_table, table_update)
 
 
+@router.post("/{table_id}/book", response_model=schemas.TableRead)
+def book_table(table_id: int, db: Session = Depends(get_db)):
+    db_table = crud.book_table(db, table_id)
+    if db_table is None:
+        raise HTTPException(status_code=409, detail="Table not available")
+    return db_table
+
+
 @router.delete("/{table_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_table(table_id: int, db: Session = Depends(get_db)):
     db_table = crud.get_table(db, table_id)
