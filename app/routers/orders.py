@@ -41,6 +41,14 @@ def update_order_status(
     return crud.update_order_status(db, db_order, status_update.status)
 
 
+@router.post("/{order_id}/cancel", response_model=schemas.OrderRead)
+def cancel_order(order_id: int, db: Session = Depends(get_db)):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return crud.cancel_order(db, db_order)
+
+
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_order(order_id: int, db: Session = Depends(get_db)):
     db_order = crud.get_order(db, order_id)
