@@ -41,6 +41,16 @@ def update_order_status(
     return crud.update_order_status(db, db_order, status_update.status)
 
 
+@router.patch("/{order_id}/items/{item_id}/quantity", response_model=schemas.OrderRead)
+def update_order_item_quantity(
+    order_id: int, item_id: int, quantity: int, db: Session = Depends(get_db)
+):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return crud.update_order_item_quantity(db, db_order, item_id, quantity)
+
+
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_order(order_id: int, db: Session = Depends(get_db)):
     db_order = crud.get_order(db, order_id)

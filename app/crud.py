@@ -105,6 +105,17 @@ def update_order_status(
     return db_order
 
 
+def update_order_item_quantity(
+    db: Session, db_order: models.Order, item_id: int, quantity: int
+) -> models.Order:
+    for item in db_order.items:
+        if item.id == item_id:
+            item.quantity = quantity
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
