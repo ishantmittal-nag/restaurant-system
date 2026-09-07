@@ -108,3 +108,10 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def cancel_order(db: Session, db_order: models.Order) -> models.Order:
+    db_order.status = models.OrderStatus.cancelled
+    db.commit()
+    db.refresh(db_order)
+    return db_order
