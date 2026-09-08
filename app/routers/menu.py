@@ -35,6 +35,11 @@ def update_menu_item(
     return crud.update_menu_item(db, db_item, item_update)
 
 
+@router.get("/available", response_model=list[schemas.MenuItemRead])
+def list_available_menu_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    return crud.get_available_menu_items(db, skip=skip, limit=limit)
+
+
 @router.delete("/{menu_item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_menu_item(menu_item_id: int, db: Session = Depends(get_db)):
     db_item = crud.get_menu_item(db, menu_item_id)
