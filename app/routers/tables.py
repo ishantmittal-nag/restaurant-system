@@ -33,6 +33,14 @@ def update_table(table_id: int, table_update: schemas.TableUpdate, db: Session =
     return crud.update_table(db, db_table, table_update)
 
 
+@router.get("/search/min-capacity", response_model=list[schemas.TableRead])
+def get_tables_with_min_capacity(min_capacity: int, db: Session = Depends(get_db)):
+    return crud.get_tables_with_min_capacity(db, min_capacity)
+
+
+@router.get("/{table_id}", response_model=schemas.TableRead)
+
+
 @router.delete("/{table_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_table(table_id: int, db: Session = Depends(get_db)):
     db_table = crud.get_table(db, table_id)
