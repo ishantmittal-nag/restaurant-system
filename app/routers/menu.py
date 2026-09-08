@@ -35,6 +35,14 @@ def update_menu_item(
     return crud.update_menu_item(db, db_item, item_update)
 
 
+@router.post("/{menu_item_id}/toggle-availability", response_model=schemas.MenuItemRead)
+def toggle_menu_item_availability(menu_item_id: int, db: Session = Depends(get_db)):
+    db_item = crud.get_menu_item(db, menu_item_id)
+    if db_item is None:
+        raise HTTPException(status_code=404, detail="Menu item not found")
+    return crud.toggle_menu_item_availability(db, db_item)
+
+
 @router.delete("/{menu_item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_menu_item(menu_item_id: int, db: Session = Depends(get_db)):
     db_item = crud.get_menu_item(db, menu_item_id)
