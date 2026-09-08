@@ -96,6 +96,24 @@ def create_order(db: Session, order: schemas.OrderCreate) -> models.Order:
     return db_order
 
 
+def duplicate_order(db: Session, source_order: models.Order) -> models.Order:
+    db_order = models.Order(table_id=source_order.table_id, notes=source_order.notes)
+    for item in source_order.items:
+        menu_item = db.get(models.MenuItem, item.menu_item_id)
+        db_order.items.append(
+            models.OrderItem(
+                menu_item_id=item.menu_item_id,
+                quantity=item.quantity,
+                unit_price=menu_item.price,
+                notes=item.notes,
+            )
+        )
+    db.add(db_order)
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+
 def update_order_status(
     db: Session, db_order: models.Order, new_status: models.OrderStatus
 ) -> models.Order:

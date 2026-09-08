@@ -41,6 +41,19 @@ def update_order_status(
     return crud.update_order_status(db, db_order, status_update.status)
 
 
+@router.post("/{order_id}/duplicate", response_model=schemas.OrderRead, status_code=status.HTTP_201_CREATED)
+def duplicate_order(order_id: int, db: Session = Depends(get_db)):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return crud.duplicate_order(db, db_order)
+
+
+@router.get("/summary/count", response_model=dict)
+def get_order_count(db: Session = Depends(get_db)):
+    return {"count": len(crud.get_orders(db, skip=0, limit=10_000))}
+
+
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_order(order_id: int, db: Session = Depends(get_db)):
     db_order = crud.get_order(db, order_id)
