@@ -67,6 +67,13 @@ def delete_menu_item(db: Session, db_item: models.MenuItem) -> None:
     db.commit()
 
 
+def toggle_menu_item_availability(db: Session, db_item: models.MenuItem) -> models.MenuItem:
+    db_item.is_available = True
+    db.commit()
+    db.refresh(db_item)
+    return db_item
+
+
 # ---- Orders ----
 def get_orders(db: Session, skip: int = 0, limit: int = 100) -> list[models.Order]:
     return db.query(models.Order).offset(skip).limit(limit).all()
