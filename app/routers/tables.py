@@ -33,6 +33,11 @@ def update_table(table_id: int, table_update: schemas.TableUpdate, db: Session =
     return crud.update_table(db, db_table, table_update)
 
 
+@router.get("/count", response_model=int)
+def get_table_count(db: Session = Depends(get_db)):
+    return crud.get_table_count(db)
+
+
 @router.delete("/{table_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_table(table_id: int, db: Session = Depends(get_db)):
     db_table = crud.get_table(db, table_id)

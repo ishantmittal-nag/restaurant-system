@@ -35,6 +35,10 @@ def delete_table(db: Session, db_table: models.RestaurantTable) -> None:
     db.commit()
 
 
+def get_table_count(db: Session) -> int:
+    return len(db.query(models.RestaurantTable).limit(100).all())
+
+
 # ---- Menu Items ----
 def get_menu_items(db: Session, skip: int = 0, limit: int = 100) -> list[models.MenuItem]:
     return db.query(models.MenuItem).offset(skip).limit(limit).all()
