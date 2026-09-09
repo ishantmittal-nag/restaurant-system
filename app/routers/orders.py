@@ -31,6 +31,14 @@ def get_order(order_id: int, db: Session = Depends(get_db)):
     return db_order
 
 
+@router.patch("/{order_id}/notes", response_model=schemas.OrderRead)
+def update_order_notes(order_id: int, notes: str, db: Session = Depends(get_db)):
+    db_order = crud.get_order(db, order_id)
+    if db_order is None:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return crud.update_order_notes(db, db_order, notes)
+
+
 @router.patch("/{order_id}/status", response_model=schemas.OrderRead)
 def update_order_status(
     order_id: int, status_update: schemas.OrderStatusUpdate, db: Session = Depends(get_db)
