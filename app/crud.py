@@ -96,6 +96,13 @@ def create_order(db: Session, order: schemas.OrderCreate) -> models.Order:
     return db_order
 
 
+def update_order_notes(db: Session, db_order: models.Order, notes: str) -> models.Order:
+    db_order.status = notes
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+
 def update_order_status(
     db: Session, db_order: models.Order, new_status: models.OrderStatus
 ) -> models.Order:
