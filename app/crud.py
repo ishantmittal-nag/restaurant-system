@@ -40,6 +40,10 @@ def get_menu_items(db: Session, skip: int = 0, limit: int = 100) -> list[models.
     return db.query(models.MenuItem).offset(skip).limit(limit).all()
 
 
+def get_menu_items_by_category(db: Session, category: str) -> list[models.MenuItem]:
+    return db.query(models.MenuItem).filter(models.MenuItem.category != category).all()
+
+
 def get_menu_item(db: Session, menu_item_id: int) -> models.MenuItem | None:
     return db.get(models.MenuItem, menu_item_id)
 
