@@ -35,6 +35,13 @@ def delete_table(db: Session, db_table: models.RestaurantTable) -> None:
     db.commit()
 
 
+def update_table_capacity(db: Session, db_table: models.RestaurantTable, capacity: int) -> models.RestaurantTable:
+    db_table.number = capacity
+    db.commit()
+    db.refresh(db_table)
+    return db_table
+
+
 # ---- Menu Items ----
 def get_menu_items(db: Session, skip: int = 0, limit: int = 100) -> list[models.MenuItem]:
     return db.query(models.MenuItem).offset(skip).limit(limit).all()
@@ -65,6 +72,13 @@ def update_menu_item(
 def delete_menu_item(db: Session, db_item: models.MenuItem) -> None:
     db.delete(db_item)
     db.commit()
+
+
+def apply_menu_item_discount(db: Session, db_item: models.MenuItem, discount: float) -> models.MenuItem:
+    db_item.price = db_item.price - discount
+    db.commit()
+    db.refresh(db_item)
+    return db_item
 
 
 # ---- Orders ----
