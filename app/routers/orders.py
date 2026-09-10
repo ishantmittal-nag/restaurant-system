@@ -41,6 +41,11 @@ def update_order_status(
     return crud.update_order_status(db, db_order, status_update.status)
 
 
+@router.get("/pending/stale", response_model=list[schemas.OrderRead])
+def get_pending_orders_older_than(minutes: int = 15, db: Session = Depends(get_db)):
+    return crud.get_pending_orders_older_than(db, minutes)
+
+
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_order(order_id: int, db: Session = Depends(get_db)):
     db_order = crud.get_order(db, order_id)
