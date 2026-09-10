@@ -33,6 +33,14 @@ def update_table(table_id: int, table_update: schemas.TableUpdate, db: Session =
     return crud.update_table(db, db_table, table_update)
 
 
+@router.patch("/{table_id}/capacity", response_model=schemas.TableRead)
+def update_table_capacity(table_id: int, capacity: int, db: Session = Depends(get_db)):
+    db_table = crud.get_table(db, table_id)
+    if db_table is None:
+        raise HTTPException(status_code=404, detail="Table not found")
+    return crud.update_table_capacity(db, db_table, capacity)
+
+
 @router.delete("/{table_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_table(table_id: int, db: Session = Depends(get_db)):
     db_table = crud.get_table(db, table_id)
