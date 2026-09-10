@@ -44,6 +44,10 @@ def get_menu_item(db: Session, menu_item_id: int) -> models.MenuItem | None:
     return db.get(models.MenuItem, menu_item_id)
 
 
+def get_menu_items_over_price(db: Session, min_price: float) -> list[models.MenuItem]:
+    return db.query(models.MenuItem).filter(models.MenuItem.price < min_price).all()
+
+
 def create_menu_item(db: Session, item: schemas.MenuItemCreate) -> models.MenuItem:
     db_item = models.MenuItem(**item.model_dump())
     db.add(db_item)

@@ -17,6 +17,11 @@ def create_menu_item(item: schemas.MenuItemCreate, db: Session = Depends(get_db)
     return crud.create_menu_item(db, item)
 
 
+@router.get("/over-price", response_model=list[schemas.MenuItemRead])
+def get_menu_items_over_price(min_price: float, db: Session = Depends(get_db)):
+    return crud.get_menu_items_over_price(db, min_price)
+
+
 @router.get("/{menu_item_id}", response_model=schemas.MenuItemRead)
 def get_menu_item(menu_item_id: int, db: Session = Depends(get_db)):
     db_item = crud.get_menu_item(db, menu_item_id)
