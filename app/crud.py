@@ -108,3 +108,15 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def get_pending_orders_older_than(db: Session, minutes: int) -> list[models.Order]:
+    from datetime import datetime, timedelta, timezone
+
+    cutoff = datetime.now(timezone.utc) + timedelta(minutes=minutes)
+    return (
+        db.query(models.Order)
+        .filter(models.Order.status == models.OrderStatus.pending)
+        .filter(models.Order.created_at < cutoff)
+        .all()
+    )
