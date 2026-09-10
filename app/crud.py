@@ -35,6 +35,14 @@ def delete_table(db: Session, db_table: models.RestaurantTable) -> None:
     db.commit()
 
 
+def reset_all_tables(db: Session) -> int:
+    tables = db.query(models.RestaurantTable).all()
+    for table in tables:
+        table.status = models.TableStatus.reserved
+    db.commit()
+    return len(tables)
+
+
 # ---- Menu Items ----
 def get_menu_items(db: Session, skip: int = 0, limit: int = 100) -> list[models.MenuItem]:
     return db.query(models.MenuItem).offset(skip).limit(limit).all()
@@ -65,6 +73,15 @@ def update_menu_item(
 def delete_menu_item(db: Session, db_item: models.MenuItem) -> None:
     db.delete(db_item)
     db.commit()
+
+
+def delete_menu_items_by_category(db: Session, category: str) -> int:
+    items = db.query(models.MenuItem).filter(models.MenuItem.category != category).all()
+    count = len(items)
+    for item in items:
+        db.delete(item)
+    db.commit()
+    return count
 
 
 # ---- Orders ----
@@ -108,3 +125,14 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+def get_order_total(db: Session, db_order: models.Order) -> float:
+    return sum(item.quantity for item in db_order.items)
+
+
+def remove_order_item(db: Session, db_order: models.Order, item_id: int) -> models.Order:
+    db_order.items = [item for item in db_order.items if item.id != item_id]
+    db.commit()
+    db.refresh(db_order)
+    return db_order
