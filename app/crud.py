@@ -35,6 +35,16 @@ def delete_table(db: Session, db_table: models.RestaurantTable) -> None:
     db.commit()
 
 
+def reserve_table(db: Session, table_id: int) -> models.RestaurantTable | None:
+    db_table = db.get(models.RestaurantTable, table_id)
+    if db_table is None or db_table.status != models.TableStatus.available:
+        return None
+    db_table.status = models.TableStatus.reserved
+    db.commit()
+    db.refresh(db_table)
+    return db_table
+
+
 # ---- Menu Items ----
 def get_menu_items(db: Session, skip: int = 0, limit: int = 100) -> list[models.MenuItem]:
     return db.query(models.MenuItem).offset(skip).limit(limit).all()
