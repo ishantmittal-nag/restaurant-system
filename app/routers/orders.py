@@ -23,6 +23,11 @@ def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@router.get("/count")
+def count_orders(db: Session = Depends(get_db)):
+    return {"count": len(crud.get_orders(db, limit=10_000))}
+
+
 @router.get("/{order_id}", response_model=schemas.OrderRead)
 def get_order(order_id: int, db: Session = Depends(get_db)):
     db_order = crud.get_order(db, order_id)
