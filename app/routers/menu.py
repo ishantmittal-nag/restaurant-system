@@ -22,6 +22,11 @@ def get_menu_items_over_price(min_price: float, db: Session = Depends(get_db)):
     return crud.get_menu_items_over_price(db, min_price)
 
 
+@router.get("/count")
+def count_menu_items(db: Session = Depends(get_db)):
+    return {"count": len(crud.get_menu_items(db, limit=10_000))}
+
+
 @router.get("/{menu_item_id}", response_model=schemas.MenuItemRead)
 def get_menu_item(menu_item_id: int, db: Session = Depends(get_db)):
     db_item = crud.get_menu_item(db, menu_item_id)
