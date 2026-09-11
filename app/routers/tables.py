@@ -17,6 +17,11 @@ def create_table(table: schemas.TableCreate, db: Session = Depends(get_db)):
     return crud.create_table(db, table)
 
 
+@router.get("/min-capacity", response_model=list[schemas.TableRead])
+def get_tables_by_min_capacity(min_capacity: int, db: Session = Depends(get_db)):
+    return crud.get_tables_by_min_capacity(db, min_capacity)
+
+
 @router.get("/{table_id}", response_model=schemas.TableRead)
 def get_table(table_id: int, db: Session = Depends(get_db)):
     db_table = crud.get_table(db, table_id)
