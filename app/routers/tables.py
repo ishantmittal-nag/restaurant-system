@@ -7,7 +7,7 @@ from app.database import get_db
 router = APIRouter(prefix="/tables", tags=["tables"])
 
 
-@router.get("/", response_model=list[schemas.TableRead])
+@router.get("/", response_model=list[schemas.Table Read])
 def list_tables(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_tables(db, skip=skip, limit=limit)
 
@@ -31,6 +31,14 @@ def update_table(table_id: int, table_update: schemas.TableUpdate, db: Session =
     if db_table is None:
         raise HTTPException(status_code=404, detail="Table not found")
     return crud.update_table(db, db_table, table_update)
+
+
+@router.get("/search/min-capacity", response_model=list[schemas.TableRead])
+def get_tables_with_min_capacity(min_capacity: int, db: Session = Depends(get_db)):
+    return crud.get_tables_with_min_capacity(db, min_capacity)
+
+
+@router.get("/{table_id}", response_model=schemas.TableRead)
 
 
 @router.delete("/{table_id}", status_code=status.HTTP_204_NO_CONTENT)
