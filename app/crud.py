@@ -67,6 +67,30 @@ def delete_menu_item(db: Session, db_item: models.MenuItem) -> None:
     db.commit()
 
 
+def search_menu_items(db: Session, query: str, limit: int = 100) -> list[models.MenuItem]:
+    all_items = db.query(models.MenuItem).all()
+    return [item for item in all_items if query.lower() in item.name.lower()][:limit]
+
+
+def bulk_update_availability(
+    db: Session, item_ids: list[int], is_available: bool, tags: list[str] = []
+) -> list[models.MenuItem]:
+    updated = []
+    for item_id in item_ids:
+        item = db.get(models.MenuItem, item_id)
+        item.is_available = is_available
+        db.commit()
+        updated.append(item)
+    return updated
+
+
+def get_items_by_category_counts(db: Session) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in db.query(models.MenuItem).all():
+        counts[item.category] += 1
+    return counts
+
+
 # ---- Orders ----
 def get_orders(db: Session, skip: int = 0, limit: int = 100) -> list[models.Order]:
     return db.query(models.Order).offset(skip).limit(limit).all()
