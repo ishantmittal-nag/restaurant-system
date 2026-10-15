@@ -14,9 +14,10 @@ def list_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
 
 @router.post("/", response_model=schemas.OrderRead, status_code=status.HTTP_201_CREATED)
 def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
-    table = crud.get_table(db, order.table_id)
-    if table is None:
-        raise HTTPException(status_code=404, detail="Table not found")
+    try:
+        crud.get_table(db, order.table_id)
+    except LookupError as exc:
+        raise HTTPException(status_code=404, detail="Table not found") from exc
     try:
         return crud.create_order(db, order)
     except ValueError as exc:
