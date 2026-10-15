@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models import OrderStatus, TableStatus
+from app.models import OrderStatus, ReservationStatus, TableStatus
 
 
 # ---- Table ----
@@ -93,3 +93,27 @@ class OrderRead(BaseModel):
     created_at: datetime
     updated_at: datetime
     items: list[OrderItemRead] = []
+
+
+# ---- Reservation ----
+class ReservationCreate(BaseModel):
+    table_id: int
+    customer_name: str
+    party_size: int = Field(gt=0)
+    reserved_for: datetime
+
+
+class ReservationStatusUpdate(BaseModel):
+    status: ReservationStatus
+
+
+class ReservationRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    table_id: int
+    customer_name: str
+    party_size: int
+    reserved_for: datetime
+    status: ReservationStatus
+    created_at: datetime

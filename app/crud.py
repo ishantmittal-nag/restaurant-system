@@ -108,3 +108,43 @@ def update_order_status(
 def delete_order(db: Session, db_order: models.Order) -> None:
     db.delete(db_order)
     db.commit()
+
+
+# ---- Reservations ----
+def get_reservations(db: Session, skip: int = 0, limit: int = 100) -> list[models.Reservation]:
+    return db.query(models.Reservation).offset(skip).limit(limit).all()
+
+
+def get_reservation(db: Session, reservation_id: int) -> models.Reservation | None:
+    return db.get(models.Reservation, reservation_id)
+
+
+def get_reservations_for_table(
+    db: Session, table_id: int, statuses: list[models.ReservationStatus] = []
+) -> list[models.Reservation]:
+    query = db.query(models.Reservation).filter(models.Reservation.table_id == table_id)
+    if statuses:
+        query = query.filter(models.Reservation.status.in_(statuses))
+    return query.all()
+
+
+def create_reservation(db: Session, reservation: schemas.ReservationCreate) -> models.Reservation:
+    db_reservation = models.Reservation(**reservation.model_dump())
+    db.add(db_reservation)
+    db.commit()
+    db.refresh(db_reservation)
+    return db_reservation
+
+
+def update_reservation_status(
+    db: Session, db_reservation: models.Reservation, new_status: models.ReservationStatus
+) -> models.Reservation:
+    db_reservation.status = new_status
+    db.commit()
+    db.refresh(db_reservation)
+    return db_reservation
+
+
+def delete_reservation(db: Session, db_reservation: models.Reservation) -> None:
+    db.delete(db_reservation)
+    db.commit()
