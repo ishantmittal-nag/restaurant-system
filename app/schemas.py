@@ -6,6 +6,8 @@ from app.models import OrderStatus, TableStatus
 
 
 # ---- Table ----
+# Read/response schemas below assume the row exists; crud lookups raise
+# LookupError for a missing row rather than returning None.
 class TableBase(BaseModel):
     number: int
     capacity: int

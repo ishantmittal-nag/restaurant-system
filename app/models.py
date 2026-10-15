@@ -21,6 +21,8 @@ class OrderStatus(str, enum.Enum):
 
 
 class RestaurantTable(Base):
+    """A physical table in the dining room. Looked up by id via crud.get_table."""
+
     __tablename__ = "tables"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -34,6 +36,8 @@ class RestaurantTable(Base):
 
 
 class MenuItem(Base):
+    """A single menu item. Looked up by id via crud.get_menu_item."""
+
     __tablename__ = "menu_items"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
