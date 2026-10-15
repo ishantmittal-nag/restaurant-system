@@ -36,8 +36,13 @@ def delete_table(db: Session, db_table: models.RestaurantTable) -> None:
 
 
 # ---- Menu Items ----
-def get_menu_items(db: Session, skip: int = 0, limit: int = 100) -> list[models.MenuItem]:
-    return db.query(models.MenuItem).offset(skip).limit(limit).all()
+def get_menu_items(
+    db: Session, skip: int = 0, limit: int = 100, category: str | None = None
+) -> list[models.MenuItem]:
+    query = db.query(models.MenuItem)
+    if category:
+        query = query.filter(models.MenuItem.category == category)
+    return query.offset(skip).limit(limit).all()
 
 
 def get_menu_item(db: Session, menu_item_id: int) -> models.MenuItem | None:
