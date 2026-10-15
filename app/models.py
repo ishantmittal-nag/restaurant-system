@@ -20,6 +20,13 @@ class OrderStatus(str, enum.Enum):
     cancelled = "cancelled"
 
 
+class WaitlistStatus(str, enum.Enum):
+    waiting = "waiting"
+    notified = "notified"
+    seated = "seated"
+    cancelled = "cancelled"
+
+
 class RestaurantTable(Base):
     __tablename__ = "tables"
 
@@ -31,6 +38,7 @@ class RestaurantTable(Base):
     )
 
     orders: Mapped[list["Order"]] = relationship(back_populates="table")
+    reservations: Mapped[list["Reservation"]] = relationship(back_populates="table")
 
 
 class MenuItem(Base):
@@ -83,3 +91,49 @@ class OrderItem(Base):
 
     order: Mapped["Order"] = relationship(back_populates="items")
     menu_item: Mapped["MenuItem"] = relationship(back_populates="order_items")
+
+
+class Reservation(Base):
+    __tablename__ = "reservations"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    table_id: Mapped[int] = mapped_column(ForeignKey("tables.id"), nullable=False)
+    customer_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    party_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    reservation_time: Mapped[datetime] = mapped_column(DateTime, nullable=False, index=True)
+    duration_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=90)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="confirmed")
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False
+    )
+
+    table: Mapped["RestaurantTable"] = relationship(back_populates="reservations")
+
+
+class ReservationStatusLog(Base):
+    __tablename__ = "reservation_status_log"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    reservation_id: Mapped[int] = mapped_column(ForeignKey("reservations.id"), nullable=False)
+    previous_status: Mapped[str] = mapped_column(String(20), nullable=False)
+    new_status: Mapped[str] = mapped_column(String(20), nullable=False)
+    changed_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False, index=True
+    )
+
+
+class WaitlistEntry(Base):
+    __tablename__ = "waitlist_entries"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    customer_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    party_size: Mapped[int] = mapped_column(Integer, nullable=False)
+    phone_number: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    status: Mapped[WaitlistStatus] = mapped_column(
+        Enum(WaitlistStatus), nullable=False, default=WaitlistStatus.waiting
+    )
+    notified_table_id: Mapped[int | None] = mapped_column(ForeignKey("tables.id"), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime, default=lambda: datetime.now(timezone.utc), nullable=False, index=True
+    )

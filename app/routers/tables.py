@@ -39,3 +39,11 @@ def delete_table(table_id: int, db: Session = Depends(get_db)):
     if db_table is None:
         raise HTTPException(status_code=404, detail="Table not found")
     crud.delete_table(db, db_table)
+
+
+@router.get("/{table_id}/reservations", response_model=list[schemas.ReservationRead])
+def list_table_reservations(table_id: int, db: Session = Depends(get_db)):
+    db_table = crud.get_table(db, table_id)
+    if db_table is None:
+        raise HTTPException(status_code=404, detail="Table not found")
+    return crud.get_reservations(db, table_id=table_id, limit=1000)
