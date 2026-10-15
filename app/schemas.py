@@ -93,3 +93,9 @@ class OrderRead(BaseModel):
     created_at: datetime
     updated_at: datetime
     items: list[OrderItemRead] = []
+
+
+class OrderSummary(BaseModel):
+    category_totals: dict[str, float]
+    total: float
+    average_item_price: float
