@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app import crud, schemas
 from app.database import get_db
+from app.pricing import MenuPricing
 
 router = APIRouter(prefix="/menu", tags=["menu"])
 
@@ -10,6 +11,12 @@ router = APIRouter(prefix="/menu", tags=["menu"])
 @router.get("/", response_model=list[schemas.MenuItemRead])
 def list_menu_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     return crud.get_menu_items(db, skip=skip, limit=limit)
+
+
+@router.get("/price-table")
+def menu_price_table(db: Session = Depends(get_db)):
+    items = crud.get_menu_items(db, limit=1000)
+    return MenuPricing(items).get_table()
 
 
 @router.post("/", response_model=schemas.MenuItemRead, status_code=status.HTTP_201_CREATED)
