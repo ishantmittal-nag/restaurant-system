@@ -39,3 +39,8 @@ def delete_table(table_id: int, db: Session = Depends(get_db)):
     if db_table is None:
         raise HTTPException(status_code=404, detail="Table not found")
     crud.delete_table(db, db_table)
+
+
+@router.post("/{table_id}/merge/{other_table_id}", response_model=schemas.TableRead)
+def merge_tables(table_id: int, other_table_id: int, db: Session = Depends(get_db)):
+    return crud.merge_tables(db, table_id, other_table_id)
